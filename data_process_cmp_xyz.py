@@ -1,3 +1,29 @@
+# data_process_cmp_xyz.py
+
+# This script is used to process rosbag files and estimate the Absolute Pose Error (APE) between two topics. 
+# The script uses the `evo` library to estimate the APE and extract the transformation matrix between the two topics.
+
+# Place your rosbag files in the directory `/home/zqr/devel/dataset/evo_bag/`.
+# Run the script `data_process_cmp_xyz.py` in a Python environment with the required dependencies installed.
+# The script will display a list of all .bag files in the directory `/home/zqr/devel/dataset/evo_bag/`.
+# Select the rosbag file you want to estimate by entering the corresponding number.
+# The script will estimate the APE between the two topics `/Odometry` and `/vicon/kuafu/kuafu` and extract the transformation matrix.
+# Then use the t matrix to aline two trajectories in specified topics and plot x, y, and z coordinates of the two trajectories.
+
+# Dependencies:
+# - rosbag
+# - rospy
+# - bagpy
+# - pandas
+# - numpy
+# - scipy
+# - evo
+
+# You can install the required dependencies using pip:
+# pip install rosbag rospy bagpy pandas numpy scipy evo
+
+# Author: Github Copilot, Zhao Qingrui
+
 import rosbag
 import rospy
 import bagpy
@@ -6,11 +32,21 @@ from bagpy import bagreader
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 import subprocess
-bag_file = '/home/zqr/devel/dataset/evo_bag/square-walk-dynamic-2023-07-26-17-02-26.bag'
-topics = ['/Odometry', '/vicon/kuafu/kuafu']
 
-# 在命令行中执行`evo_ape bag `命令
-bag_file = '/home/zqr/devel/dataset/evo_bag/square-walk-dynamic-2023-07-26-17-02-26.bag'
+# 读取文件路径/home/zqr/devel/dataset/evo_bag/中的.bag文件，并在命令行中列出来，让我通过1 2 3... 进行选择，选择后，将选择的文件路径赋值给bag_file
+import os
+# Get a list of all .bag files in the directory
+bag_files = [f for f in os.listdir('/home/zqr/devel/dataset/evo_bag/') if f.endswith('.bag')]
+print("找到以下rosbag文件：")
+# Print out the list of files with numbers for selection
+for i, f in enumerate(bag_files):
+    print(f"\t{i+1}. {f}")
+# Get user input for selection
+selection = int(input("\n选择想要估计的rosbag文件: "))
+# Assign the selected file path to bag_file
+bag_file = os.path.join('/home/zqr/devel/dataset/evo_bag/', bag_files[selection-1])
+
+# 设置topic
 topics = ['/Odometry', '/vicon/kuafu/kuafu']
 
 cmd = f"evo_ape bag {bag_file} {' '.join(topics)} -va"

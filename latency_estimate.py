@@ -1,3 +1,27 @@
+# Introduction:
+# This script is used to estimate the latency between two sets of data. It reads in two .txt files, 
+# shifts the data in one of the files by a range of values, 
+# and then calculates the mean and median absolute error between the two sets of data for each shift value. 
+# The results are plotted on a graph.
+
+# Usage:
+# 1. Place the two .txt files to be compared in the same directory as the script.
+# 2. Modify the `ref_data_dir` and `cmp_data_dir` variables to point to the two .txt files.
+# 3. Modify the `ref_data_shift_min` and `ref_data_shift_max` variables to set the range of shift values to test.
+# 4. Modify the `frame_num` variable to set the number of frames to compare for each shift value.
+# 5. Run the script in a Python environment with the required dependencies installed.
+# 6. The script will output the mean and median absolute error for each shift value, and plot the results on a graph.
+
+# Dependencies:
+# - pandas
+# - numpy
+# - matplotlib
+
+# You can install the required dependencies using pip:
+# pip install pandas numpy matplotlib
+
+# Author: Github Copilot, Zhao Qingrui
+
 import subprocess
 import pandas as pd
 import numpy as np
