@@ -2,7 +2,7 @@ import bagpy
 from bagpy import bagreader
 import os
 
-file_path = '/home/zqr/devel/dataset/'
+file_path = '/home/zqr/devel/dataset/evo_bag/'
 # Get a list of all .bag files in the directory
 bag_files = [f for f in os.listdir(file_path) if f.endswith('.bag')]
 print("找到以下rosbag文件：")

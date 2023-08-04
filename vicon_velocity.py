@@ -12,6 +12,7 @@ import os
 # Get a list of all .bag files in the directory
 bag_files = [f for f in os.listdir('/home/zqr/devel/dataset/evo_bag/') if f.endswith('.bag')]
 print("找到以下rosbag文件：")
+bag_files.sort()
 # Print out the list of files with numbers for selection
 for i, f in enumerate(bag_files):
     print(f"\t{i+1}. {f}")
@@ -79,10 +80,13 @@ for i in range(vicon_xyzxyzw.shape[1]):
 vicon_txyz = np.vstack((vicon_time,vicon_xyz[0,:], vicon_xyz[1,:], vicon_xyz[2,:]))
 
 vicon_vxyz = np.zeros((3, vicon_xyzxyzw.shape[1]))
-for i in range(vicon_txyz.shape[1]-1):
-    vicon_vxyz[0,i] = (vicon_xyz[0,i+1]-vicon_xyz[0,i])/(vicon_time[i+1]-vicon_time[i])
-    vicon_vxyz[1,i] = (vicon_xyz[1,i+1]-vicon_xyz[1,i])/(vicon_time[i+1]-vicon_time[i])
-    vicon_vxyz[2,i] = (vicon_xyz[2,i+1]-vicon_xyz[2,i])/(vicon_time[i+1]-vicon_time[i])
+for i in range(vicon_xyz.shape[1]-1):
+    # vicon_vxyz[0,i] = (vicon_xyz[0,i+1]-vicon_xyz[0,i])/(vicon_time[i+1]-vicon_time[i])
+    # vicon_vxyz[1,i] = (vicon_xyz[1,i+1]-vicon_xyz[1,i])/(vicon_time[i+1]-vicon_time[i])
+    # vicon_vxyz[2,i] = (vicon_xyz[2,i+1]-vicon_xyz[2,i])/(vicon_time[i+1]-vicon_time[i])
+    vicon_vxyz[0,i] = (vicon_xyz[0,i+1]-vicon_xyz[0,i])*300
+    vicon_vxyz[1,i] = (vicon_xyz[1,i+1]-vicon_xyz[1,i])*300
+    vicon_vxyz[2,i] = (vicon_xyz[2,i+1]-vicon_xyz[2,i])*300
 
 plt.figure(1)
 plt.plot(vicon_time, vicon_vxyz[0,:], label='vicon_vx')
@@ -93,4 +97,8 @@ plt.title('vicon_vxyz')
 plt.xlabel('time')
 plt.ylabel('m/s')
 plt.legend()
+
+plt.figure(2)
+# vicon_xyz的x轴数据
+plt.plot(vicon_time, vicon_xyz[0,:], label='vicon_x')
 plt.show()

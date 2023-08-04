@@ -38,6 +38,7 @@ import os
 # Get a list of all .bag files in the directory
 bag_files = [f for f in os.listdir('/home/zqr/devel/dataset/evo_bag/') if f.endswith('.bag')]
 print("找到以下rosbag文件：")
+bag_files.sort()
 # Print out the list of files with numbers for selection
 for i, f in enumerate(bag_files):
     print(f"\t{i+1}. {f}")
@@ -47,7 +48,7 @@ selection = int(input("\n选择想要估计的rosbag文件: "))
 bag_file = os.path.join('/home/zqr/devel/dataset/evo_bag/', bag_files[selection-1])
 
 # 设置topic
-topics = ['/Odometry', '/vicon/kuafu/kuafu']
+topics = ['/bitbot_se', '/vicon/kuafu/kuafu']
 
 cmd = f"evo_ape bag {bag_file} {' '.join(topics)} -va"
 # print(cmd)
@@ -94,6 +95,8 @@ vicon_xyzxyzw = np.vstack((vicon_x, vicon_y, vicon_z, vicon_rx, vicon_ry, vicon_
 # 将vicon的xyzw转换为旋转矩阵
 vicon_r_0 = R.from_quat(vicon_xyzxyzw[3:7,0].T)
 vicon_t_0 = vicon_xyzxyzw[0:3,0]
+vicon_time_0 = []
+odom_time_0 = []
 # 将vicon_r_0, vicon_t_0拼为其次变换矩阵
 # 定义vicon_xyz
 vicon_xyz = np.zeros((3, vicon_xyzxyzw.shape[1]))
@@ -106,10 +109,15 @@ for i in range(vicon_xyzxyzw.shape[1]):
     temp2 = np.dot(temp1, vicon_T)
     vicon_T_0_t = np.dot(temp2,T_ex)
     vicon_xyz[0:3,i] = vicon_T_0_t[0:3,3]
+    vicon_time_0.append(vicon_time[i] - vicon_time[0])
 
-odom_txyz = np.vstack((odom_time,odom_x, odom_y, odom_z))
+i = 0
+for i in range(odom_time.shape[0]):
+    odom_time_0.append(odom_time[i] - odom_time[0])
+
+odom_txyz = np.vstack((odom_time_0,odom_x, odom_y, odom_z))
 # vicon_xyz = np.vstack((vicon_x, vicon_y, vicon_z))
-vicon_txyz = np.vstack((vicon_time,vicon_xyz[0,:], vicon_xyz[1,:], vicon_xyz[2,:]))
+vicon_txyz = np.vstack((vicon_time_0,vicon_xyz[0,:], vicon_xyz[1,:], vicon_xyz[2,:]))
 
 # 将vicon和odom的x y z结果分别绘制在三张图上，横坐标为时间戳
 plt.figure()
@@ -123,5 +131,20 @@ plt.legend()
 plt.figure()
 plt.plot(odom_txyz[0,:], odom_txyz[3,:], label='odom_z')
 plt.plot(vicon_txyz[0,:], vicon_txyz[3,:], label='vicon_z')
+plt.legend()
+# plt.show()
+
+# 将vicon_txyz和odomtxyz对应时间的xyz轴坐标做差，并将结果储存为新的矩阵
+diff_xyz = np.zeros((3, vicon_txyz.shape[1]))
+for i in range(vicon_txyz.shape[1]):
+    time_diff = abs(odom_txyz[0,:] - vicon_txyz[0,i])
+    idx = np.argmin(time_diff)
+    diff_xyz[0:3,i] = vicon_txyz[1:4,i] - odom_txyz[1:4,idx]
+
+# 绘制xyz轴坐标做差的结果
+plt.figure()
+plt.plot(vicon_txyz[0,:], diff_xyz[0,:], label='diff_x')
+plt.plot(vicon_txyz[0,:], diff_xyz[1,:], label='diff_y')
+plt.plot(vicon_txyz[0,:], diff_xyz[2,:], label='diff_z')
 plt.legend()
 plt.show()
