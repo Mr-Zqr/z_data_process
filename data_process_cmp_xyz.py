@@ -48,7 +48,7 @@ selection = int(input("\n选择想要估计的rosbag文件: "))
 bag_file = os.path.join('/home/zqr/devel/dataset/evo_bag/', bag_files[selection-1])
 
 # 设置topic
-topics = ['/bitbot_se', '/vicon/kuafu/kuafu']
+topics = ['/robot/dlio/odom_node/odom', '/vicon/kuafu/kuafu']
 
 cmd = f"evo_ape bag {bag_file} {' '.join(topics)} -va"
 # print(cmd)
@@ -120,18 +120,19 @@ odom_txyz = np.vstack((odom_time_0,odom_x, odom_y, odom_z))
 vicon_txyz = np.vstack((vicon_time_0,vicon_xyz[0,:], vicon_xyz[1,:], vicon_xyz[2,:]))
 
 # 将vicon和odom的x y z结果分别绘制在三张图上，横坐标为时间戳
-plt.figure()
-plt.plot(odom_txyz[0,:], odom_txyz[1,:], label='odom_x')
-plt.plot(vicon_txyz[0,:], vicon_txyz[1,:], label='vicon_x')
-plt.legend()
-plt.figure()
-plt.plot(odom_txyz[0,:], odom_txyz[2,:], label='odom_y')
-plt.plot(vicon_txyz[0,:], vicon_txyz[2,:], label='vicon_y')
-plt.legend()
-plt.figure()
-plt.plot(odom_txyz[0,:], odom_txyz[3,:], label='odom_z')
-plt.plot(vicon_txyz[0,:], vicon_txyz[3,:], label='vicon_z')
-plt.legend()
+fig, axs=plt.subplots(1,3)
+# axs[0].figure()
+axs[0].plot(odom_txyz[0,:], odom_txyz[1,:], label='odom_x')
+axs[0].plot(vicon_txyz[0,:], vicon_txyz[1,:], label='vicon_x')
+axs[0].legend()
+# axs[1].figure()
+axs[1].plot(odom_txyz[0,:], odom_txyz[2,:], label='odom_y')
+axs[1].plot(vicon_txyz[0,:], vicon_txyz[2,:], label='vicon_y')
+axs[1].legend()
+# axs[2].figure()
+axs[2].plot(odom_txyz[0,:], odom_txyz[3,:], label='odom_z')
+axs[2].plot(vicon_txyz[0,:], vicon_txyz[3,:], label='vicon_z')
+axs[2].legend()
 # plt.show()
 
 # 将vicon_txyz和odomtxyz对应时间的xyz轴坐标做差，并将结果储存为新的矩阵
