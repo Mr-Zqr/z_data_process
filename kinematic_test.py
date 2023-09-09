@@ -3,9 +3,9 @@ from scipy.spatial.transform import Rotation as R
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-vicon_marker_file = "/home/zqr/devel/dataset/evo_bag/kinematic_test/vicon_kuafu_kuafu.tum"
-vicon_foot_file = "/home/zqr/devel/dataset/evo_bag/kinematic_test/vicon_kuafu_fot_kuafu_fot.tum"
-pinocchio_imu_foot_file = "/home/zqr/devel/dataset/evo_bag/kinematic_test/bitbot_foot_position.tum"
+vicon_marker_file = "/vicon_kuafu_kuafu.tum"
+vicon_foot_file = "/vicon_kuafu_fot_kuafu_fot.tum"
+pinocchio_imu_foot_file = "/bitbot_foot_position.tum"
 
 vicon_marker_data = np.loadtxt(vicon_marker_file, delimiter=' ')
 vicon_foot_data = np.loadtxt(vicon_foot_file, delimiter=' ')
